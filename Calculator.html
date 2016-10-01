@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Calculator</title>
+
+</head>
+<body>
+<!--Calculator border-->
+<div style="width: 300px; height: 360px; border-style: solid; border-color: red">
+	<!--Calculations display-->
+	<div id="calculator_display" style="width: 280px; height: 100px; margin: 10px auto 10px auto; border-style: solid; border-color: grey">0</div>
+	<!--Button section-->
+	<table id="buttons" style="width: 280px; height: 240px; text-align: center; margin-right: auto; margin-left: auto">
+		
+	</table>
+</div>
+
+<script>
+
+//create 2D array of calculator buttons
+var rows = [["7", "8", "9", "/", "CE"], ["4", "5", "6", "*", "C"],["1", "2", "3", "-", "="],["0", ".", "+", "(", ")"]];
+
+//grab the table
+var container = document.getElementById("buttons");
+
+//loop structure
+//for each row in the rows array, assign it's value to the parameter called 'buttons'.
+rows.forEach(function(buttons){
+
+	//create a new table row, then loop: for each buttons (current row) grab it's inside 
+	//values and assign it to the parameter btn.
+    var row = document.createElement("tr");
+	var display = document.getElementById("calculator_display");
+    buttons.forEach(function(btn){
+	
+		//create a new column item.
+        var td = document.createElement("td");
+		//assign the new column item to the contents within each row.
+        td.innerHTML = btn;
+		td.style.border = "1px solid green";
+        td.onclick = function(){
+			if(this.innerHTML != "=" && this.innerHTML != "CE" && this.innerHTML != "C"){
+				var node = document.createTextNode(this.innerHTML);
+				display.appendChild(node);
+				
+			}
+			if(this.innerHTML == "="){
+				display.innerHTML = solve();
+			}else if(this.innerHTML == "CE" || this.innerHTML == "C"){
+				display.innerHTML = "";
+			}
+		}
+		//add column item to the table row.
+        row.appendChild(td);
+    });//end second forEach
+	
+	//add the row to the html table.
+    container.appendChild(row);
+});//end first forEach
+function solve(){
+	var equation = document.getElementById("calculator_display").innerHTML;
+	return organize_data(equation);
+}
+function organize_data(problem){
+	var numbers = [];
+	var operators = [];
+	var LoL = 0; //LoL: Last operator Location
+	
+	var i =0;
+	while(i<=problem.length){
+		if(problem.charAt(i) == "*"){
+			operators.push("*");
+			numbers.push(problem.substring(LoL, i));
+			LoL = i+1; //i is where the operator is, +1 starts at the number.
+		}else if(problem.charAt(i) == "/"){
+			operators.push("/");
+			numbers.push(problem.substring(LoL, i));
+			LoL = i+1;
+		}else if(problem.charAt(i) == "+"){
+			operators.push("+");
+			numbers.push(problem.substring(LoL, i));
+			LoL = i+1;
+		}else if(problem.charAt(i) == "-"){
+			operators.push("-");
+			numbers.push(problem.substring(LoL, i));
+			LoL = i+1;
+		}else if(problem.charAt(i) == "("){
+			var parenthesis_equ = problem.substring(i, problem.length);
+			var EndofPar = parenthesisLength(parenthesis_equ);
+			var result = organize_data(problem.substring(i+1, EndofPar+i));
+			problem = problem.substring(0,i) + result + problem.substring((EndofPar+i)+1, problem.length);
+		}//end if
+		i++;
+	}//end while
+	
+	numbers.push(problem.substring(LoL, problem.length)); //grabs the last number since given: 45 + 10, the above loop only grabs 15 and +, not 10.
+	return calculate(numbers, operators);
+}//end organize_data
+
+function calculate(numbers, operators){
+	
+	//START PEMDAS: MULTIPLY AND DIVIDE
+	var i = 0;
+	while(i<operators.length){
+		var growingSolution = 0;
+		console.log(i);
+		if(operators[i] == "*"){
+			growingSolution = numbers[i] * numbers[i+1];
+			numbers.splice(i,1);
+			operators.splice(i,1);
+			numbers[i] = growingSolution;
+			i -= 1;
+		}else if(operators[i] == "/"){
+			growingSolution = numbers[i] / numbers[i+1];
+			numbers.splice(i,1);
+			operators.splice(i,1);
+			numbers[i] = growingSolution;
+			i -= 1;
+		}//end if
+		i++;
+	}//end while
+
+	//START PEMDAS: ADDITION AND SUBTRACTION
+	var j = 0;
+	while(j<operators.length){
+		var growingSolution = 0; 
+		console.log(j);
+		if(operators[j] == "+"){
+			growingSolution = +numbers[j] + +numbers[j+1];
+			numbers.splice(j,1);
+			operators.splice(j,1);
+			numbers[j] = growingSolution;
+			j -= 1;
+		}else if(operators[j] == "-"){
+			growingSolution = numbers[j] - numbers[j+1];
+			numbers.splice(j,1);
+			operators.splice(j,1);
+			numbers[j] = growingSolution;
+			j -= 1;
+		}//end if
+		j++;
+	}//end while
+	return numbers[0];
+}//end calculate
+
+function parenthesisLength(problem){
+	var EoP = 0; //End of Parenthesis
+	var parenthesisLength = 0;
+	var i = 0;
+	var keepGoing = true;
+	
+	while(keepGoing){
+		if(problem.charAt(i) == "("){
+			EoP += 1;
+		}else if(problem.charAt(i) == ")"){
+			
+			EoP -=1;
+		}else if(EoP == 0){
+			keepGoing = false;
+			parenthesisLength = i-1;
+			
+		}//end if
+		i++;
+	}//end while
+	return parenthesisLength;
+}//end parenthesisLength
+
+console.log(container);
+</script>
+
+</body>
+</html>
