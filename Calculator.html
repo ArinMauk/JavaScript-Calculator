@@ -9,6 +9,7 @@
 <div style="width: 300px; height: 360px; border-style: solid; border-color: red">
 	<!--Calculations display-->
 	<div id="calculator_display" style="width: 280px; height: 100px; margin: 10px auto 10px auto; border-style: solid; border-color: grey">0</div>
+	
 	<!--Button section-->
 	<table id="buttons" style="width: 280px; height: 240px; text-align: center; margin-right: auto; margin-left: auto">
 		
@@ -27,17 +28,18 @@ var container = document.getElementById("buttons");
 //for each row in the rows array, assign it's value to the parameter called 'buttons'.
 rows.forEach(function(buttons){
 
-	//create a new table row, then loop: for each buttons (current row) grab it's inside 
-	//values and assign it to the parameter btn.
+    //create a new table row, then loop: for each buttons (current row) grab it's inside 
+    //values and assign it to the parameter btn.
     var row = document.createElement("tr");
-	var display = document.getElementById("calculator_display");
+    var display = document.getElementById("calculator_display");
     buttons.forEach(function(btn){
 	
-		//create a new column item.
-        var td = document.createElement("td");
-		//assign the new column item to the contents within each row.
+	//create a new column item.
+    	var td = document.createElement("td");
+	    
+	//assign the new column item to the contents within each row.
         td.innerHTML = btn;
-		td.style.border = "1px solid green";
+	td.style.border = "1px solid green";
         td.onclick = function(){
 			if(this.innerHTML != "=" && this.innerHTML != "CE" && this.innerHTML != "C"){
 				var node = document.createTextNode(this.innerHTML);
@@ -54,9 +56,10 @@ rows.forEach(function(buttons){
         row.appendChild(td);
     });//end second forEach
 	
-	//add the row to the html table.
+    //add the row to the html table.
     container.appendChild(row);
 });//end first forEach
+	
 function solve(){
 	var equation = document.getElementById("calculator_display").innerHTML;
 	return organize_data(equation);
